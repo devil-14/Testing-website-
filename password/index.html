@@ -1,150 +1,65 @@
+---
+layout: default
+title: "Document Access"
+---
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document Link with Puzzle and Password Strength</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
+<h1>Access the Document and Solve the Puzzle</h1>
+
+<p>Click <a href="YOUR_DOCUMENT_URL" target="_blank" id="docLink">here</a> to access the document.</p>
+
+<button id="puzzleButton" disabled>Puzzle Button (Locked)</button>
+
+<br><br>
+
+<div id="passwordSection">
+    <h2>Enter Your Password</h2>
+    <input type="text" id="passwordInput" placeholder="Enter your password">
+    <div id="passwordStrength">Password strength: </div>
+    <div id="clue2" style="display:none;">Clue 2: <a href="YOUR_CLUE2_URL" target="_blank">Proceed to the next clue</a></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
+<script>
+    let hasClickedDocLink = false;
+
+    const puzzleButton = document.getElementById('puzzleButton');
+    const docLink = document.getElementById('docLink');
+    const passwordInput = document.getElementById('passwordInput');
+    const clue2 = document.getElementById('clue2');
+    const passwordStrengthDisplay = document.getElementById('passwordStrength');
+
+    function enablePuzzleButton() {
+        if (!hasClickedDocLink) {
+            puzzleButton.disabled = false;
         }
+    }
 
-        #puzzleButton {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #ccc;
-            border: none;
-            color: #fff;
-            cursor: not-allowed;
+    docLink.addEventListener('click', function () {
+        hasClickedDocLink = true;
+        puzzleButton.disabled = true;
+        setTimeout(enablePuzzleButton, 180000); // 3 minutes
+    });
+
+    function calculatePasswordStrength(password) {
+        const strength = zxcvbn(password);
+        let strengthText = '';
+        switch (strength.score) {
+            case 0: strengthText = 'Very weak'; break;
+            case 1: strengthText = 'Weak'; break;
+            case 2: strengthText = 'Fair'; break;
+            case 3: strengthText = 'Good'; break;
+            case 4: strengthText = 'Strong'; break;
         }
+        passwordStrengthDisplay.innerText = 'Password strength: ' + strengthText;
 
-        #puzzleButton.enabled {
-            background-color: #28a745;
-            cursor: pointer;
+        if (strength.score === 4) {
+            clue2.style.display = 'block';
+        } else {
+            clue2.style.display = 'none';
         }
+    }
 
-        #passwordStrength {
-            margin-top: 20px;
-            font-size: 14px;
-        }
-
-        #generatePassword {
-            margin-top: 20px;
-        }
-
-        #clue2 {
-            margin-top: 20px;
-            font-size: 18px;
-            color: blue;
-            display: none;
-        }
-    </style>
-</head>
-<body>
-
-    <h1>Access the Document and Solve the Puzzle</h1>
-
-    <!-- Link to Document -->
-    <p>Click <a href="YOUR_DOCUMENT_URL" target="_blank" id="docLink">here</a> to access the document.</p>
-
-    <!-- Disabled Button for Puzzle (Enable After Document Access) -->
-    <button id="puzzleButton" disabled>Puzzle Button (Locked)</button>
-
-    <br><br>
-
-    <!-- Password Input Section -->
-    <div id="passwordSection">
-        <h2>Enter Your Password</h2>
-        <input type="text" id="passwordInput" placeholder="Enter your password">
-        <div id="passwordStrength">Password strength: </div>
-
-        <!-- Display Clue 2 -->
-        <div id="clue2">Clue 2: <a href="YOUR_CLUE2_URL" target="_blank">Proceed to the next clue</a></div>
-    </div>
-
-    <script>
-        let hasClickedDocLink = false;
-
-        // Simulate document access timer (3 minutes = 180 seconds)
-        const docAccessDuration = 180000; // 3 minutes in milliseconds
-        const puzzleButton = document.getElementById('puzzleButton');
-        const docLink = document.getElementById('docLink');
-        const passwordInput = document.getElementById('passwordInput');
-        const clue2 = document.getElementById('clue2');
-        const passwordStrengthDisplay = document.getElementById('passwordStrength');
-
-        // Disable the puzzle button for 3 minutes
-        function enablePuzzleButton() {
-            if (!hasClickedDocLink) {
-                puzzleButton.disabled = false;
-                puzzleButton.classList.add('enabled');
-                puzzleButton.innerText = "Puzzle Button (Unlocked)";
-            }
-        }
-
-        // Simulate the "Nobody reads that fast" message if returning too quickly
-        function checkReturn() {
-            if (hasClickedDocLink) {
-                puzzleButton.disabled = true;
-                puzzleButton.innerText = "Nobody reads that fast";
-                setTimeout(enablePuzzleButton, docAccessDuration);
-            }
-        }
-
-        // When the user clicks the document link
-        docLink.addEventListener('click', function () {
-            hasClickedDocLink = true;
-            puzzleButton.disabled = true;
-            puzzleButton.innerText = "Puzzle Button (Locked)";
-            setTimeout(enablePuzzleButton, docAccessDuration);
-        });
-
-        // Password strength calculation using zxcvbn library
-        function calculatePasswordStrength(password) {
-            const strength = zxcvbn(password);
-            let strengthText = '';
-            switch (strength.score) {
-                case 0:
-                    strengthText = 'Very weak';
-                    break;
-                case 1:
-                    strengthText = 'Weak';
-                    break;
-                case 2:
-                    strengthText = 'Fair';
-                    break;
-                case 3:
-                    strengthText = 'Good';
-                    break;
-                case 4:
-                    strengthText = 'Strong';
-                    break;
-            }
-            passwordStrengthDisplay.innerText = 'Password strength: ' + strengthText;
-
-            // Show Clue 2 if password strength is strong
-            if (strength.score === 4) {
-                clue2.style.display = 'block';
-            } else {
-                clue2.style.display = 'none';
-            }
-        }
-
-        // Event listener for password input
-        passwordInput.addEventListener('input', function () {
-            calculatePasswordStrength(passwordInput.value);
-        });
-
-        // Check if the user returns to the page too quickly
-        window.addEventListener('focus', checkReturn);
-
-    </script>
-
-    <!-- Load zxcvbn Password Strength Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
-
-</body>
-</html>
+    passwordInput.addEventListener('input', function () {
+        calculatePasswordStrength(passwordInput.value);
+    });
+</script>
