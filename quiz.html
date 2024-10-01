@@ -10,156 +10,151 @@
             text-align: center;
             margin-top: 50px;
         }
-        #quiz {
+        .hidden {
             display: none;
         }
-        #result {
-            margin-top: 20px;
-            font-size: 18px;
+        .result {
+            font-size: 24px;
+            margin: 20px;
         }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #28a745;
-            color: #fff;
-            border: none;
-            cursor: pointer;
+        .feedback {
+            font-size: 20px;
+            color: green;
+        }
+        .wrong {
+            color: red;
         }
     </style>
 </head>
 <body>
 
     <h1>2FA Authentication Quiz</h1>
-    <button id="startQuiz">Start Quiz</button>
-
-    <div id="quiz">
-        <h2>Answer the following questions:</h2>
-        <form id="quizForm">
-            <div>
-                <p>1. What does 2FA stand for?</p>
-                <label><input type="radio" name="q1" value="Two-Factor Authentication"> Two-Factor Authentication</label><br>
-                <label><input type="radio" name="q1" value="Two-Factor Analysis"> Two-Factor Analysis</label><br>
-                <label><input type="radio" name="q1" value="Second-Factor Authentication"> Second-Factor Authentication</label><br>
-                <label><input type="radio" name="q1" value="Dual-Factor Authentication"> Dual-Factor Authentication</label>
-            </div>
-            <div>
-                <p>2. Which of the following is NOT a factor in 2FA?</p>
-                <label><input type="radio" name="q2" value="Something you know"> Something you know</label><br>
-                <label><input type="radio" name="q2" value="Something you have"> Something you have</label><br>
-                <label><input type="radio" name="q2" value="Somewhere you go"> Somewhere you go</label><br>
-                <label><input type="radio" name="q2" value="Something you are"> Something you are</label>
-            </div>
-            <div>
-                <p>3. True or False: 2FA adds an extra layer of security.</p>
-                <label><input type="radio" name="q3" value="True"> True</label><br>
-                <label><input type="radio" name="q3" value="False"> False</label><br>
-            </div>
-            <div>
-                <p>4. What is an example of a second factor?</p>
-                <label><input type="radio" name="q4" value="A text message code"> A text message code</label><br>
-                <label><input type="radio" name="q4" value="A security question"> A security question</label><br>
-                <label><input type="radio" name="q4" value="An email password"> An email password</label><br>
-                <label><input type="radio" name="q4" value="Your username"> Your username</label>
-            </div>
-            <div>
-                <p>5. Why is 2FA important?</p>
-                <label><input type="radio" name="q5" value="It protects your accounts"> It protects your accounts</label><br>
-                <label><input type="radio" name="q5" value="It speeds up logins"> It speeds up logins</label><br>
-                <label><input type="radio" name="q5" value="It stores passwords"> It stores passwords</label><br>
-                <label><input type="radio" name="q5" value="It requires no passwords"> It requires no passwords</label>
-            </div>
-            <div>
-                <p>6. Which app is commonly used for 2FA?</p>
-                <label><input type="radio" name="q6" value="Google Authenticator"> Google Authenticator</label><br>
-                <label><input type="radio" name="q6" value="Facebook Authenticator"> Facebook Authenticator</label><br>
-                <label><input type="radio" name="q6" value="Microsoft Authenticator"> Microsoft Authenticator</label><br>
-                <label><input type="radio" name="q6" value="Twitter Authenticator"> Twitter Authenticator</label>
-            </div>
-            <div>
-                <p>7. What does SMS stand for in the context of 2FA?</p>
-                <label><input type="radio" name="q7" value="Short Message Service"> Short Message Service</label><br>
-                <label><input type="radio" name="q7" value="Secure Messaging System"> Secure Messaging System</label><br>
-                <label><input type="radio" name="q7" value="Simple Message Service"> Simple Message Service</label><br>
-                <label><input type="radio" name="q7" value="Safe Message Service"> Safe Message Service</label>
-            </div>
-            <div>
-                <p>8. Can 2FA be bypassed?</p>
-                <label><input type="radio" name="q8" value="Yes"> Yes</label><br>
-                <label><input type="radio" name="q8" value="No"> No</label><br>
-            </div>
-            <div>
-                <p>9. What happens if you lose your 2FA device?</p>
-                <label><input type="radio" name="q9" value="You may need recovery options"> You may need recovery options</label><br>
-                <label><input type="radio" name="q9" value="You lose access forever"> You lose access forever</label><br>
-                <label><input type="radio" name="q9" value="Nothing happens"> Nothing happens</label><br>
-                <label><input type="radio" name="q9" value="You can reset it instantly"> You can reset it instantly</label>
-            </div>
-            <div>
-                <p>10. Is 2FA foolproof?</p>
-                <label><input type="radio" name="q10" value="No"> No</label><br>
-                <label><input type="radio" name="q10" value="Yes"> Yes</label><br>
-            </div>
-            <button type="submit">Submit Answers</button>
-        </form>
-        <div id="result"></div>
+    <div id="quizContainer">
+        <div id="question"></div>
+        <div id="options"></div>
+        <button id="submit" class="hidden">Submit</button>
     </div>
 
+    <div class="result" id="result" class="hidden"></div>
+    <div class="feedback" id="feedback" class="hidden"></div>
+
     <script>
-        const correctAnswers = [
-            "Two-Factor Authentication",
-            "Somewhere you go",
-            "True",
-            "A text message code",
-            "It protects your accounts",
-            "Google Authenticator",
-            "Short Message Service",
-            "Yes",
-            "You may need recovery options",
-            "No"
+        const questions = [
+            {
+                question: "What does 2FA stand for?",
+                options: ["Two Factor Authentication", "Two Frequency Access", "Two Fast Access", "Two File Access"],
+                answer: 0
+            },
+            {
+                question: "Which of the following is a method of 2FA?",
+                options: ["Username and Password", "SMS Verification", "Email Verification", "IP Address"],
+                answer: 1
+            },
+            {
+                question: "Which of these is NOT a form of 2FA?",
+                options: ["SMS Code", "Email Code", "Security Questions", "Authenticator App"],
+                answer: 2
+            },
+            {
+                question: "What is the purpose of 2FA?",
+                options: ["To improve user experience", "To provide additional security", "To reduce login times", "To increase user engagement"],
+                answer: 1
+            },
+            {
+                question: "What is a common method used for 2FA?",
+                options: ["Password Manager", "Hardware Token", "Browser Cookies", "Tracking Cookies"],
+                answer: 1
+            },
+            {
+                question: "Which of these is an authenticator app?",
+                options: ["Google Authenticator", "LastPass", "Norton Antivirus", "McAfee"],
+                answer: 0
+            },
+            {
+                question: "What happens if you lose access to your 2FA method?",
+                options: ["You can't log in", "You can reset it via email", "You can still log in", "You will be locked out permanently"],
+                answer: 1
+            },
+            {
+                question: "Is it safe to use SMS for 2FA?",
+                options: ["Yes, it's the most secure", "No, it's less secure than other methods", "Yes, it's convenient", "No, it's completely unsafe"],
+                answer: 1
+            },
+            {
+                question: "What is a one-time password (OTP)?",
+                options: ["A password that can be reused", "A password valid for only one login", "A static password", "A password shared between users"],
+                answer: 1
+            },
+            {
+                question: "What does it mean if a site uses 2FA?",
+                options: ["It is secure", "It is insecure", "It requires more than one form of identification", "It only requires a password"],
+                answer: 2
+            }
         ];
 
-        const startQuizButton = document.getElementById('startQuiz');
-        const quizSection = document.getElementById('quiz');
-        const quizForm = document.getElementById('quizForm');
-        const resultDisplay = document.getElementById('result');
+        let currentQuestionIndex = 0;
+        let score = 0;
 
-        startQuizButton.addEventListener('click', function () {
-            quizSection.style.display = 'block';
-            startQuizButton.style.display = 'none';
-            resultDisplay.innerHTML = '';
-        });
-
-        quizForm.addEventListener('submit', function (event) {
-            event.preventDefault();
-            let score = 0;
-            let wrongAnswers = 0;
-
-            for (let i = 0; i < correctAnswers.length; i++) {
-                const userAnswer = document.querySelector(`input[name="q${i + 1}"]:checked`);
-                if (userAnswer && userAnswer.value === correctAnswers[i]) {
-                    score++;
-                } else {
-                    wrongAnswers++;
-                }
-            }
-
-            if (wrongAnswers > 0) {
-                resultDisplay.innerHTML = `You got ${wrongAnswers} question(s) wrong. Please try again.`;
-                resetQuiz();
+        function loadQuestion() {
+            if (currentQuestionIndex < questions.length) {
+                const question = questions[currentQuestionIndex];
+                document.getElementById("question").innerText = question.question;
+                const optionsContainer = document.getElementById("options");
+                optionsContainer.innerHTML = '';
+                question.options.forEach((option, index) => {
+                    const button = document.createElement("button");
+                    button.innerText = option;
+                    button.onclick = () => checkAnswer(index);
+                    optionsContainer.appendChild(button);
+                });
+                document.getElementById("submit").classList.add("hidden");
             } else {
-                resultDisplay.innerHTML = `Congratulations! You answered all questions correctly! <br> Proceed to the quiz: <a href="YOUR_QUIZ_URL">Here</a>`;
-            }
-        });
-
-        function resetQuiz() {
-            for (let i = 1; i <= correctAnswers.length; i++) {
-                const radios = document.getElementsByName(`q${i}`);
-                for (let radio of radios) {
-                    radio.checked = false;
-                }
+                displayResults();
             }
         }
-    </script>
 
+        function checkAnswer(selectedIndex) {
+            const correctIndex = questions[currentQuestionIndex].answer;
+            const feedback = document.getElementById("feedback");
+
+            if (selectedIndex === correctIndex) {
+                score++;
+                feedback.innerHTML = "✓ Correct!";
+            } else {
+                feedback.innerHTML = "✗ Wrong!";
+            }
+
+            feedback.classList.remove("hidden");
+            setTimeout(() => {
+                feedback.classList.add("hidden");
+                currentQuestionIndex++;
+                loadQuestion();
+            }, 15000); // Show feedback for 15 seconds
+        }
+
+        function displayResults() {
+            const result = document.getElementById("result");
+            result.innerHTML = `You answered ${score} out of ${questions.length} questions correctly.`;
+            result.classList.remove("hidden");
+
+            if (score === questions.length) {
+                result.innerHTML += '<br>All answers are correct! Here is your next URL: <a href="YOUR_QUIZ_URL" target="_blank">Proceed to the quiz</a>';
+            } else {
+                result.innerHTML += "<br>Some answers were incorrect. The quiz will reset.";
+                resetQuiz();
+            }
+        }
+
+        function resetQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            setTimeout(() => {
+                document.getElementById("result").classList.add("hidden");
+                loadQuestion();
+            }, 15000); // Reset the quiz after showing the result for 15 seconds
+        }
+
+        loadQuestion();
+    </script>
 </body>
 </html>
