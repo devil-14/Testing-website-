@@ -11,21 +11,11 @@
             margin-top: 50px;
         }
         .question {
-            margin: 20px 0;
-        }
-        .hidden {
-            display: none;
-        }
-        .result {
-            font-size: 24px;
-            margin: 20px;
+            margin-bottom: 20px;
         }
         .feedback {
-            font-size: 20px;
-            color: green;
-        }
-        .wrong {
-            color: red;
+            font-weight: bold;
+            margin-top: 5px;
         }
         .tick {
             color: green;
@@ -33,84 +23,102 @@
         .cross {
             color: red;
         }
+        .hidden {
+            display: none;
+        }
+        .result {
+            margin-top: 30px;
+        }
     </style>
 </head>
 <body>
 
     <h1>2FA Authentication Quiz</h1>
+
     <div id="quizContainer"></div>
+
     <button id="submit">Submit Answers</button>
 
     <div class="result hidden" id="result"></div>
+    <div id="clueContainer" class="hidden"></div>
 
     <script>
         const questions = [
             {
-                question: "What does 2FA stand for?",
-                options: ["Two Factor Authentication", "Two Frequency Access", "Two Fast Access", "Two File Access"],
+                question: "What is the full form of 2FA?",
+                options: ["Two-Factor Authentication", "Two-Factor Authorization", "Two-Field Authentication", "Two-Field Authorization"],
                 answer: 0
             },
             {
-                question: "Which of the following is a method of 2FA?",
-                options: ["Username and Password", "SMS Verification", "Email Verification", "IP Address"],
-                answer: 1
-            },
-            {
-                question: "Which of these is NOT a form of 2FA?",
-                options: ["SMS Code", "Email Code", "Security Questions", "Authenticator App"],
+                question: "Which of the following is a common example of 2FA?",
+                options: ["Username and password", "Password and security question", "Password and OTP (One-Time Password)", "Security question and CAPTCHA"],
                 answer: 2
             },
             {
-                question: "What is the purpose of 2FA?",
-                options: ["To improve user experience", "To provide additional security", "To reduce login times", "To increase user engagement"],
+                question: "Which of these is the most secure form of 2FA?",
+                options: ["Email verification", "SMS OTP", "Authenticator app", "Security questions"],
+                answer: 2
+            },
+            {
+                question: "What does an authenticator app provide?",
+                options: ["Random passwords", "Security questions", "Time-based OTPs", "CAPTCHA"],
+                answer: 2
+            },
+            {
+                question: "Why is 2FA important?",
+                options: ["It prevents brute force attacks", "It requires two proofs of identity", "It makes login faster", "It encrypts data"],
                 answer: 1
             },
             {
-                question: "What is a common method used for 2FA?",
-                options: ["Password Manager", "Hardware Token", "Browser Cookies", "Tracking Cookies"],
-                answer: 1
+                question: "Which of these is NOT a common 2FA method?",
+                options: ["SMS code", "Fingerprint", "Email OTP", "PIN code"],
+                answer: 3
             },
             {
-                question: "Which of these is an authenticator app?",
-                options: ["Google Authenticator", "LastPass", "Norton Antivirus", "McAfee"],
+                question: "Which 2FA method is vulnerable to SIM-swapping attacks?",
+                options: ["SMS OTP", "Authenticator app", "Fingerprint", "Push notification"],
                 answer: 0
             },
             {
-                question: "What happens if you lose access to your 2FA method?",
-                options: ["You can't log in", "You can reset it via email", "You can still log in", "You will be locked out permanently"],
+                question: "Which is a disadvantage of 2FA?",
+                options: ["It is expensive", "It is inconvenient", "It can cause data loss", "It weakens encryption"],
                 answer: 1
             },
             {
-                question: "Is it safe to use SMS for 2FA?",
-                options: ["Yes, it's the most secure", "No, it's less secure than other methods", "Yes, it's convenient", "No, it's completely unsafe"],
+                question: "What happens if you lose your 2FA device?",
+                options: ["You are permanently locked out", "You can recover using backup codes", "You can use any other device", "Your password is enough"],
                 answer: 1
             },
             {
-                question: "What is a one-time password (OTP)?",
-                options: ["A password that can be reused", "A password valid for only one login", "A static password", "A password shared between users"],
-                answer: 1
-            },
-            {
-                question: "What does it mean if a site uses 2FA?",
-                options: ["It is secure", "It is insecure", "It requires more than one form of identification", "It only requires a password"],
-                answer: 2
+                question: "Which of these is a biometric 2FA method?",
+                options: ["Fingerprint", "PIN code", "SMS OTP", "Authenticator app"],
+                answer: 0
             }
         ];
 
-        let score = 0;
-        let userAnswers = [];
         let canSubmit = true;
+        let userAnswers = [];
+        let score = 0;
 
-        function loadQuiz() {
-            const quizContainer = document.getElementById("quizContainer");
+        function renderQuiz() {
+            const quizContainer = document.getElementById('quizContainer');
+            quizContainer.innerHTML = '';
+
             questions.forEach((question, index) => {
-                const questionDiv = document.createElement("div");
-                questionDiv.classList.add("question");
-                questionDiv.innerHTML = `<p>${index + 1}. ${question.question}</p>`;
-                
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question');
+                questionDiv.innerHTML = `<h3>${index + 1}. ${question.question}</h3>`;
+
                 question.options.forEach((option, optionIndex) => {
-                    const optionInput = `<input type="radio" name="question${index}" value="${optionIndex}" required> ${option}<br>`;
-                    questionDiv.innerHTML += optionInput;
+                    const label = document.createElement('label');
+                    const input = document.createElement('input');
+                    input.type = 'radio';
+                    input.name = `question${index}`;
+                    input.value = optionIndex;
+                    label.appendChild(input);
+                    label.appendChild(document.createTextNode(option));
+                    questionDiv.appendChild(label);
+                    questionDiv.appendChild(document.createElement('br'));
                 });
 
                 quizContainer.appendChild(questionDiv);
@@ -118,7 +126,7 @@
         }
 
         function checkAnswers() {
-            if (!canSubmit) return;  // Prevent re-submission before 15 seconds
+            if (!canSubmit) return;
 
             score = 0;
             userAnswers = [];
@@ -129,11 +137,11 @@
                 const selected = document.querySelector(`input[name="question${index}"]:checked`);
                 const answerDiv = document.createElement("div");
                 answerDiv.classList.add("feedback");
-                
+
                 if (selected) {
                     const userAnswer = parseInt(selected.value);
                     userAnswers.push(userAnswer);
-                    
+
                     if (userAnswer === question.answer) {
                         score++;
                         answerDiv.innerHTML = `✓ Correct!`;
@@ -151,29 +159,38 @@
                 result.appendChild(answerDiv);
             });
 
+            const clueContainer = document.getElementById("clueContainer");
+
+            // Show ticks and crosses for 15 seconds
+            result.classList.remove("hidden");
+
             // Check if all answers are correct
             if (score === questions.length) {
-                const clueUrl = "YOUR_CLUE_URL"; // Replace with your actual URL
-                result.innerHTML += `<p class="feedback">Congratulations! You answered all questions correctly! <a href="${clueUrl}" target="_blank">Next Clue</a></p>`;
+                const clueUrl = "YOUR_CLUE_URL"; // Replace with your actual clue URL
+                clueContainer.innerHTML = `Congratulations! You answered all questions correctly! <a href="${clueUrl}" target="_blank">Next Clue</a>`;
+                clueContainer.classList.remove("hidden"); // Show the clue link
+            } else {
+                clueContainer.innerHTML = ''; // Hide clue link if not all correct
             }
 
-            result.classList.remove("hidden");
-            canSubmit = false; // Disable further submissions
+            canSubmit = false; // Disable changing answers
+
             setTimeout(() => {
                 result.classList.add("hidden");
+                clueContainer.classList.add("hidden"); // Hide clue link after 15 seconds
                 resetQuiz();
-            }, 10000); // Reset after showing results for 15 seconds
+            }, 15000); // Show results for 15 seconds
         }
 
         function resetQuiz() {
-            document.getElementById("result").innerHTML = '';
-            document.getElementById("quizContainer").innerHTML = '';
-            loadQuiz();
-            canSubmit = true; // Allow submission again
+            canSubmit = true;
+            renderQuiz(); // Re-render the quiz to reset
         }
 
-        document.getElementById("submit").addEventListener("click", checkAnswers);
-        loadQuiz();
+        document.getElementById('submit').addEventListener('click', checkAnswers);
+
+        renderQuiz(); // Initialize quiz
     </script>
+
 </body>
 </html>
