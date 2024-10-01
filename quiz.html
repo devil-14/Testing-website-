@@ -99,6 +99,7 @@
 
         let score = 0;
         let userAnswers = [];
+        let canSubmit = true;
 
         function loadQuiz() {
             const quizContainer = document.getElementById("quizContainer");
@@ -117,6 +118,8 @@
         }
 
         function checkAnswers() {
+            if (!canSubmit) return;  // Prevent re-submission before 15 seconds
+
             score = 0;
             userAnswers = [];
             const result = document.getElementById("result");
@@ -148,17 +151,25 @@
                 result.appendChild(answerDiv);
             });
 
+            // Check if all answers are correct
+            if (score === questions.length) {
+                const clueUrl = "YOUR_CLUE_URL"; // Replace with your actual URL
+                result.innerHTML += `<p class="feedback">Congratulations! You answered all questions correctly! <a href="${clueUrl}" target="_blank">Next Clue</a></p>`;
+            }
+
             result.classList.remove("hidden");
+            canSubmit = false; // Disable further submissions
             setTimeout(() => {
                 result.classList.add("hidden");
                 resetQuiz();
-            }, 15000); // Reset after showing results for 15 seconds
+            }, 10000); // Reset after showing results for 15 seconds
         }
 
         function resetQuiz() {
             document.getElementById("result").innerHTML = '';
             document.getElementById("quizContainer").innerHTML = '';
             loadQuiz();
+            canSubmit = true; // Allow submission again
         }
 
         document.getElementById("submit").addEventListener("click", checkAnswers);
