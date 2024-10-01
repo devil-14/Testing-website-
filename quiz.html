@@ -10,6 +10,9 @@
             text-align: center;
             margin-top: 50px;
         }
+        .question {
+            margin: 20px 0;
+        }
         .hidden {
             display: none;
         }
@@ -24,19 +27,21 @@
         .wrong {
             color: red;
         }
+        .tick {
+            color: green;
+        }
+        .cross {
+            color: red;
+        }
     </style>
 </head>
 <body>
 
     <h1>2FA Authentication Quiz</h1>
-    <div id="quizContainer">
-        <div id="question"></div>
-        <div id="options"></div>
-        <button id="submit" class="hidden">Submit</button>
-    </div>
+    <div id="quizContainer"></div>
+    <button id="submit">Submit Answers</button>
 
-    <div class="result" id="result" class="hidden"></div>
-    <div class="feedback" id="feedback" class="hidden"></div>
+    <div class="result hidden" id="result"></div>
 
     <script>
         const questions = [
@@ -92,69 +97,72 @@
             }
         ];
 
-        let currentQuestionIndex = 0;
         let score = 0;
+        let userAnswers = [];
 
-        function loadQuestion() {
-            if (currentQuestionIndex < questions.length) {
-                const question = questions[currentQuestionIndex];
-                document.getElementById("question").innerText = question.question;
-                const optionsContainer = document.getElementById("options");
-                optionsContainer.innerHTML = '';
-                question.options.forEach((option, index) => {
-                    const button = document.createElement("button");
-                    button.innerText = option;
-                    button.onclick = () => checkAnswer(index);
-                    optionsContainer.appendChild(button);
+        function loadQuiz() {
+            const quizContainer = document.getElementById("quizContainer");
+            questions.forEach((question, index) => {
+                const questionDiv = document.createElement("div");
+                questionDiv.classList.add("question");
+                questionDiv.innerHTML = `<p>${index + 1}. ${question.question}</p>`;
+                
+                question.options.forEach((option, optionIndex) => {
+                    const optionInput = `<input type="radio" name="question${index}" value="${optionIndex}" required> ${option}<br>`;
+                    questionDiv.innerHTML += optionInput;
                 });
-                document.getElementById("submit").classList.add("hidden");
-            } else {
-                displayResults();
-            }
+
+                quizContainer.appendChild(questionDiv);
+            });
         }
 
-        function checkAnswer(selectedIndex) {
-            const correctIndex = questions[currentQuestionIndex].answer;
-            const feedback = document.getElementById("feedback");
-
-            if (selectedIndex === correctIndex) {
-                score++;
-                feedback.innerHTML = "✓ Correct!";
-            } else {
-                feedback.innerHTML = "✗ Wrong!";
-            }
-
-            feedback.classList.remove("hidden");
-            setTimeout(() => {
-                feedback.classList.add("hidden");
-                currentQuestionIndex++;
-                loadQuestion();
-            }, 15000); // Show feedback for 15 seconds
-        }
-
-        function displayResults() {
+        function checkAnswers() {
+            score = 0;
+            userAnswers = [];
             const result = document.getElementById("result");
-            result.innerHTML = `You answered ${score} out of ${questions.length} questions correctly.`;
-            result.classList.remove("hidden");
+            result.innerHTML = '';
 
-            if (score === questions.length) {
-                result.innerHTML += '<br>All answers are correct! Here is your next URL: <a href="YOUR_QUIZ_URL" target="_blank">Proceed to the quiz</a>';
-            } else {
-                result.innerHTML += "<br>Some answers were incorrect. The quiz will reset.";
+            questions.forEach((question, index) => {
+                const selected = document.querySelector(`input[name="question${index}"]:checked`);
+                const answerDiv = document.createElement("div");
+                answerDiv.classList.add("feedback");
+                
+                if (selected) {
+                    const userAnswer = parseInt(selected.value);
+                    userAnswers.push(userAnswer);
+                    
+                    if (userAnswer === question.answer) {
+                        score++;
+                        answerDiv.innerHTML = `✓ Correct!`;
+                        answerDiv.classList.add("tick");
+                    } else {
+                        answerDiv.innerHTML = `✗ Wrong!`;
+                        answerDiv.classList.add("cross");
+                    }
+                } else {
+                    answerDiv.innerHTML = `✗ No answer selected!`;
+                    answerDiv.classList.add("cross");
+                }
+
+                answerDiv.id = `feedback${index}`;
+                result.appendChild(answerDiv);
+            });
+
+            result.classList.remove("hidden");
+            setTimeout(() => {
+                result.classList.add("hidden");
                 resetQuiz();
-            }
+            }, 15000); // Reset after showing results for 15 seconds
         }
 
         function resetQuiz() {
-            currentQuestionIndex = 0;
-            score = 0;
-            setTimeout(() => {
-                document.getElementById("result").classList.add("hidden");
-                loadQuestion();
-            }, 15000); // Reset the quiz after showing the result for 15 seconds
+            document.getElementById("result").innerHTML = '';
+            document.getElementById("quizContainer").innerHTML = '';
+            loadQuiz();
         }
 
-        loadQuestion();
+        document.getElementById("submit").addEventListener("click", checkAnswers);
+        loadQuiz();
     </script>
 </body>
 </html>
