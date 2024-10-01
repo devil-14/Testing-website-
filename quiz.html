@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2FA Authentication Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #quiz {
+            display: none;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>2FA Authentication Quiz</h1>
+    <button id="startQuiz">Start Quiz</button>
+
+    <div id="quiz">
+        <h2>Answer the following questions:</h2>
+        <form id="quizForm">
+            <div>
+                <p>1. What does 2FA stand for?</p>
+                <label><input type="radio" name="q1" value="Two-Factor Authentication"> Two-Factor Authentication</label><br>
+                <label><input type="radio" name="q1" value="Two-Factor Analysis"> Two-Factor Analysis</label><br>
+                <label><input type="radio" name="q1" value="Second-Factor Authentication"> Second-Factor Authentication</label><br>
+                <label><input type="radio" name="q1" value="Dual-Factor Authentication"> Dual-Factor Authentication</label>
+            </div>
+            <div>
+                <p>2. Which of the following is NOT a factor in 2FA?</p>
+                <label><input type="radio" name="q2" value="Something you know"> Something you know</label><br>
+                <label><input type="radio" name="q2" value="Something you have"> Something you have</label><br>
+                <label><input type="radio" name="q2" value="Somewhere you go"> Somewhere you go</label><br>
+                <label><input type="radio" name="q2" value="Something you are"> Something you are</label>
+            </div>
+            <div>
+                <p>3. True or False: 2FA adds an extra layer of security.</p>
+                <label><input type="radio" name="q3" value="True"> True</label><br>
+                <label><input type="radio" name="q3" value="False"> False</label><br>
+            </div>
+            <div>
+                <p>4. What is an example of a second factor?</p>
+                <label><input type="radio" name="q4" value="A text message code"> A text message code</label><br>
+                <label><input type="radio" name="q4" value="A security question"> A security question</label><br>
+                <label><input type="radio" name="q4" value="An email password"> An email password</label><br>
+                <label><input type="radio" name="q4" value="Your username"> Your username</label>
+            </div>
+            <div>
+                <p>5. Why is 2FA important?</p>
+                <label><input type="radio" name="q5" value="It protects your accounts"> It protects your accounts</label><br>
+                <label><input type="radio" name="q5" value="It speeds up logins"> It speeds up logins</label><br>
+                <label><input type="radio" name="q5" value="It stores passwords"> It stores passwords</label><br>
+                <label><input type="radio" name="q5" value="It requires no passwords"> It requires no passwords</label>
+            </div>
+            <div>
+                <p>6. Which app is commonly used for 2FA?</p>
+                <label><input type="radio" name="q6" value="Google Authenticator"> Google Authenticator</label><br>
+                <label><input type="radio" name="q6" value="Facebook Authenticator"> Facebook Authenticator</label><br>
+                <label><input type="radio" name="q6" value="Microsoft Authenticator"> Microsoft Authenticator</label><br>
+                <label><input type="radio" name="q6" value="Twitter Authenticator"> Twitter Authenticator</label>
+            </div>
+            <div>
+                <p>7. What does SMS stand for in the context of 2FA?</p>
+                <label><input type="radio" name="q7" value="Short Message Service"> Short Message Service</label><br>
+                <label><input type="radio" name="q7" value="Secure Messaging System"> Secure Messaging System</label><br>
+                <label><input type="radio" name="q7" value="Simple Message Service"> Simple Message Service</label><br>
+                <label><input type="radio" name="q7" value="Safe Message Service"> Safe Message Service</label>
+            </div>
+            <div>
+                <p>8. Can 2FA be bypassed?</p>
+                <label><input type="radio" name="q8" value="Yes"> Yes</label><br>
+                <label><input type="radio" name="q8" value="No"> No</label><br>
+            </div>
+            <div>
+                <p>9. What happens if you lose your 2FA device?</p>
+                <label><input type="radio" name="q9" value="You may need recovery options"> You may need recovery options</label><br>
+                <label><input type="radio" name="q9" value="You lose access forever"> You lose access forever</label><br>
+                <label><input type="radio" name="q9" value="Nothing happens"> Nothing happens</label><br>
+                <label><input type="radio" name="q9" value="You can reset it instantly"> You can reset it instantly</label>
+            </div>
+            <div>
+                <p>10. Is 2FA foolproof?</p>
+                <label><input type="radio" name="q10" value="No"> No</label><br>
+                <label><input type="radio" name="q10" value="Yes"> Yes</label><br>
+            </div>
+            <button type="submit">Submit Answers</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const correctAnswers = [
+            "Two-Factor Authentication",
+            "Somewhere you go",
+            "True",
+            "A text message code",
+            "It protects your accounts",
+            "Google Authenticator",
+            "Short Message Service",
+            "Yes",
+            "You may need recovery options",
+            "No"
+        ];
+
+        const startQuizButton = document.getElementById('startQuiz');
+        const quizSection = document.getElementById('quiz');
+        const quizForm = document.getElementById('quizForm');
+        const resultDisplay = document.getElementById('result');
+
+        startQuizButton.addEventListener('click', function () {
+            quizSection.style.display = 'block';
+            startQuizButton.style.display = 'none';
+            resultDisplay.innerHTML = '';
+        });
+
+        quizForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            let score = 0;
+            let wrongAnswers = 0;
+
+            for (let i = 0; i < correctAnswers.length; i++) {
+                const userAnswer = document.querySelector(`input[name="q${i + 1}"]:checked`);
+                if (userAnswer && userAnswer.value === correctAnswers[i]) {
+                    score++;
+                } else {
+                    wrongAnswers++;
+                }
+            }
+
+            if (wrongAnswers > 0) {
+                resultDisplay.innerHTML = `You got ${wrongAnswers} question(s) wrong. Please try again.`;
+                resetQuiz();
+            } else {
+                resultDisplay.innerHTML = `Congratulations! You answered all questions correctly! <br> Proceed to the quiz: <a href="YOUR_QUIZ_URL">Here</a>`;
+            }
+        });
+
+        function resetQuiz() {
+            for (let i = 1; i <= correctAnswers.length; i++) {
+                const radios = document.getElementsByName(`q${i}`);
+                for (let radio of radios) {
+                    radio.checked = false;
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>
