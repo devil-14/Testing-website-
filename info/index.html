@@ -179,3 +179,58 @@
 
 
 <p><span class="lia-inline-image-display-wrapper lia-image-align-inline" image-alt="Figure 4: QR code phishing blocked by Microsoft Defender for Office 365" style="width: 730px;"><span class="lia-message-image-wrapper lia-message-image-actions-narrow lia-message-image-actions-below"><img src="https://techcommunity.microsoft.com/t5/image/serverpage/image-id/534081iBBCCF1E4BBDDA6E7/image-dimensions/730x533?v=v2" width="730" height="533" role="button" alt="thumbnail image 5 captioned Figure 4: QR code phishing blocked by Microsoft Defender for Office 365" li-image-url="https://techcommunity.microsoft.com/t5/image/serverpage/image-id/534081iBBCCF1E4BBDDA6E7?v=v2" li-image-display-id="'534081iBBCCF1E4BBDDA6E7'" li-message-uid="'4007041'" li-messages-message-image="true" li-bindable="" class="lia-media-image" tabindex="0" li-bypass-lightbox-when-linked="true" li-use-hover-links="false" li-compiled="true"><!----></span><span class="lia-inline-image-caption" onclick="event.preventDefault();">
+
+
+	<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Completion Button</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        #completionButton {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: gray;
+            border: none;
+            cursor: not-allowed;
+        }
+        #completionButton.unlocked {
+            background-color: green;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    
+
+    <div style="text-align: center; margin-top: 20px;">
+        <p>Read through the information above.</p>
+        <button id="completionButton" disabled>Completed (locked)</button>
+    </div>
+
+    <script>
+        // Function to unlock the button after 3 minutes
+        setTimeout(function() {
+            var button = document.getElementById('completionButton');
+            button.disabled = false;
+            button.innerHTML = 'Completed (unlocked)';
+            button.classList.add('unlocked');
+            button.style.cursor = 'pointer'; // Change cursor style
+        }, 18000); // 180000 milliseconds = 3 minutes
+
+        // Add click event to redirect when the button is clicked
+        document.getElementById('completionButton').addEventListener('click', function() {
+            if (!this.disabled) {
+                window.location.href = 'https://example.com'; // Change this to your target URL
+            }
+        });
+    </script>
+
+</body>
+</html>
