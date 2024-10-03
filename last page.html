@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permanent User Entry and Ranking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        input[type="text"] {
+            padding: 8px;
+            width: 200px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #ranking-list {
+            margin-top: 20px;
+        }
+        .rank-item {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 5px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+
+<h1>User Entry and Ranking</h1>
+
+<label for="username">Enter your name:</label>
+<input type="text" id="username" placeholder="Your name" required>
+<button onclick="addName()">Submit</button>
+
+<h2>Rankings</h2>
+<div id="ranking-list">
+    <!-- Rankings will appear here -->
+</div>
+
+<script>
+    // Retrieve names from localStorage or initialize an empty array
+    let namesList = JSON.parse(localStorage.getItem('namesList')) || [];
+
+    // Function to add a name to the list
+    function addName() {
+        const name = document.getElementById('username').value;
+        
+        if (name) {
+            // Add the name to the list with a timestamp
+            namesList.push({ name: name, time: new Date().getTime() });
+            
+            // Clear the input field after submission
+            document.getElementById('username').value = '';
+
+            // Sort names by time (i.e., the order of entry)
+            namesList.sort((a, b) => a.time - b.time);
+
+            // Save updated list to localStorage
+            localStorage.setItem('namesList', JSON.stringify(namesList));
+
+            // Update the ranking list
+            updateRanking();
+        } else {
+            alert("Please enter your name.");
+        }
+    }
+
+    // Function to display the ranking
+    function updateRanking() {
+        const rankingList = document.getElementById('ranking-list');
+        rankingList.innerHTML = ''; // Clear previous rankings
+
+        // Display updated list of names with their rank
+        namesList.forEach((entry, index) => {
+            const rankItem = document.createElement('div');
+            rankItem.classList.add('rank-item');
+            rankItem.innerHTML = `<strong>#${index + 1}:</strong> ${entry.name}`;
+            rankingList.appendChild(rankItem);
+        });
+    }
+
+    // Load the ranking list when the page loads
+    window.onload = updateRanking;
+</script>
+
+</body>
+</html>
